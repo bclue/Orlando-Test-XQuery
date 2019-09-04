@@ -1,0 +1,4 @@
+(:- Query 2.02 BaseX :)
+
+for $hit in doc("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/writing/gaskel-w.xml")//NAME[@STANDARD="Dickens, Charles"] | doc("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/biography/gaskel-b.xml")//NAME[@STANDARD="Dickens, Charles"]
+return $hit
