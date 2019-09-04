@@ -1,0 +1,4 @@
+(:- Query 9.02 BaseX :)
+let $key_term := "Scotland"
+for $hit in db:open('hope')[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+return $hit
