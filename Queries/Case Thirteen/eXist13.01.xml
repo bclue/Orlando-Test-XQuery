@@ -1,0 +1,20 @@
+for $hit in  //OCCUPATION[ft:query(., <query>
+     <bool>
+       <term> Book </term>
+       <term> Collection </term>
+	<term> Library </term>
+     </bool>
+   </query>)] | //SIGNIFICANTACTIVITY[ft:query(., <query>
+     <bool>
+        <term> Book </term>
+       <term> Collection </term>
+	<term> Library </term>
+     </bool>
+   </query>)] | //LEISUREANDSOCIETY[ft:query(., <query>
+     <bool>
+        <term> Book </term>
+       <term> Collection </term>
+	<term> Library </term>
+     </bool>
+     </query>)]
+     return $hit
