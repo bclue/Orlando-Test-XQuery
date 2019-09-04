@@ -1,0 +1,54 @@
+(:- Query 1.01 BaseX :)
+
+(:function to filter out documents by when the author was alive:)
+declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )
+{
+ for $writer  in doc("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/catalogue/catalogue.xml")//person
+
+ 	let $birth := local:process_date($writer/@birth)
+ 	let $death := local:process_date($writer/@death)
+ 	let $id := xs:string($writer/@person_id)
+ 
+  	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
+  	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
+  	order by $birth
+  	return $id
+};
+
+(:function to reformat Orlando dates to YYYY-MM-DD:)
+declare function local:process_date($string_date as xs:string) {
+ let $date := tokenize($string_date, "[-]")
+ let $exclude := ("", " ", "  ", "    ")
+ let $date := distinct-values($date[not(.=$exclude)])
+
+ return 
+ 
+ if (count($date) = 3) then (
+	string-join($date, '-')  
+ ) else ( if (count($date) = 2) then (
+ 	concat(string-join($date, '-'), "-01")
+ 	) else (if (count($date) = 1) then ( 
+ 		concat($date, "-01-01")
+ 		) else (
+ 		)
+ 		)
+ 		)
+};
+
+(: Set query variables :)
+
+let $start_date := "1800-01-01"
+let $end_date := "1899-12-31"
+
+(: Get query results :)
+for $id in local:filter_using_catalogue($start_date, $end_date)
+        
+       
+        	let $writing_uri := concat("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/writing/", $id, "-w.xml")
+
+     return
+          if (fn:doc-available($writing_uri)) then (
+             for $hit in  doc($writing_uri)//TGENRE[@GENRENAME="GOTHIC"]
+			return $hit/(ancestor::PAUTHORSHIP))
+
+          
