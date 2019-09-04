@@ -1,0 +1,3 @@
+let $key_term := "Modernist"
+for $hit in db:open('hope')[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+return $hit
