@@ -1,0 +1,6 @@
+(:- Query 13.01 BaseX:)
+let $key_term := ("book", "library", "collection")
+for $hit in db:open('hope')//OCCUPATION[.//text() contains text {$key_term} any  using stemming using diacritics insensitive window 6 sentences]
+|  db:open('hope')//SIGNIFICANTACTIVITY[.//text() contains text {$key_term} any  using stemming using diacritics insensitive window 6 sentences]
+| db:open('hope')//LEISUREANDSOCIETY[.//text() contains text {$key_term} any  using stemming using diacritics insensitive window 6 sentences]
+return $hit
