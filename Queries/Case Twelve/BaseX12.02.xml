@@ -1,0 +1,6 @@
+(:- Query 12.01 BaseX:)
+
+for $hit in //TCHARACTERTYPEROLE[.//text() contains text "sailor" all words using stemming using diacritics insensitive window 6 sentences]
+| //TCHARACTERTYPEROLE[.//text() contains text "seaman" all words using stemming using diacritics insensitive window 6 sentences]
+| //TCHARACTERTYPEROLE[.//text() contains text "officer" all words using stemming using diacritics insensitive window 6 sentences]
+      return $hit
