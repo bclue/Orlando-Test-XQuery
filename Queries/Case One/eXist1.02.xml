@@ -1,1 +1,84 @@
 
+(:- Query 1.02 eXist-db :)
+(: Note--While this query does successfully turn in a list of documents that have cholera hits in them, it groups all hits in one document together.
+ I have confirmed by eye that all hits returned in the Orlando search are present within the documents returned. I am working to make this query
+ better match the current Orlando results :)
+
+import module namespace kwic="http://exist-db.org/xquery/kwic";
+(:function to filter out documents by when the author was alive:)
+declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )
+{
+ for $writer  in doc("/db/TEST/catalogue/catalogue.xml")//person
+
+ 	let $birth := local:process_date($writer/@birth)
+ 	let $death := local:process_date($writer/@death)
+ 	let $id := xs:string($writer/@person_id)
+ 
+  	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
+  	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
+  	order by $birth
+  	return $id
+};
+
+
+declare function local:filter_events($eid as xs:string?, $start_date as xs:string, $end_date as xs:string )
+{
+ 
+ for $date  in doc(concat("/db/TEST/events/", $eid, ".xml"))//FREESTANDING_EVENT//(* except RESPONSIBILITY)//DATE/@VALUE
+ 	let $date := local:process_date($date)
+  	where xs:date($date) ge xs:date($start_date) and xs:date($date) le xs:date($end_date)
+  	order by $date
+  	return true() 
+};
+
+
+
+(:function to reformat Orlando dates to YYYY-MM-DD:)
+declare function local:process_date($string_date as xs:string) {
+ let $date := tokenize($string_date, "[-]")
+ let $exclude := ("", " ", "  ", "    ")
+ let $date := distinct-values($date[not(.=$exclude)])
+
+ return 
+
+ if (count($date) = 3) then (
+	string-join($date, '-')  
+ ) else ( if (count($date) = 2) then (
+ 	concat(string-join($date, '-'), "-01")
+ 	) else (if (count($date) = 1) then ( 
+ 		concat($date, "-01-01")
+ 		) else (
+ 		)
+ 		)
+ 		)
+};
+
+(: Set query variables :)
+let $key_term := "cholera"
+let $start_date := "1832-06-07"
+let $end_date := "1867-08-14"
+
+(:
+(: Get query results :)
+for $id in local:filter_using_catalogue($start_date, $end_date)
+        return
+        	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
+		let $writing_uri := concat("/db/TEST/writing/", $id, "-w.xml")	
+          for $hit in doc($bio_uri)//BIOGRAPHY[ft:query(.,  $key_term)] | doc($writing_uri)//WRITING[ft:query(.,  $key_term)]
+			return $hit
+:)
+
+(:
+for $hit in //BIBLIOGRAPHY_ENTRY[ft:query(.,  $key_term)]
+	let $date := local:process_date($hit//DATE_OF_PUBLICATION/@REG)
+	where xs:date($date) ge xs:date($start_date) and xs:date($date) le xs:date($end_date)
+  	order by $date
+  	return $hit
+
+:)
+(:
+for $hit in //FREESTANDING_EVENT//CHRONPROSE[ft:query(.,  $key_term)] | //FREESTANDING_EVENT//SHORTPROSE[ft:query(.,  $key_term)]
+	let $eid := xs:string($hit/(ancestor::FREESTANDING_EVENT)/@EID)
+	where local:filter_events($eid, $start_date, $end_date) = true() 
+     return $hit
+:)
