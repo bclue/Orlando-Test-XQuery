@@ -1,0 +1,25 @@
+(:- Query 11.01 eXist-db:)
+
+for $hit in  //FREESTANDING_EVENT[ft:query(., <query>
+     <bool>
+       <term occur="must"> Oxford </term>
+       <term occur="must"> Suffrage </term>
+     </bool>
+   </query>)] | //BIBLIOGRAPHY_ENTRY[ft:query(., <query>
+     <bool>
+       <term occur="must"> Oxford </term>
+       <term occur="must"> Suffrage </term>
+     </bool>
+   </query>)] | //BIOGRAPHY[ft:query(., <query>
+     <bool>
+       <term occur="must"> Oxford </term>
+       <term occur="must"> Suffrage </term>
+     </bool>
+   </query>)] | //WRITING[ft:query(., <query>
+     <bool>
+       <term occur="must"> Oxford</term>
+       <term occur="must"> Suffrage </term>
+     </bool>
+   </query>)]
+
+   return $hit
