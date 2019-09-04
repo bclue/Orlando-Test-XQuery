@@ -1,1 +1,9 @@
+(:- Query 1.03 eXist-db :)
 
+(: Set query variables :)
+let $cause_of_death := "cholera"
+
+for $hit in //DEATH//CAUSE[ft:query(.,  $cause_of_death)]
+  let $date := xs:date($hit//DATE/@VALUE)
+   order by $date
+   return $hit/(ancestor::DIV1)
