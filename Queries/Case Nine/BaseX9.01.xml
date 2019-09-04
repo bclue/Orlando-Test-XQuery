@@ -1,0 +1,12 @@
+(:- Query 9.01 BaseX:)
+
+for $hit in //CULTURALFORMATION[.//text() contains text "Scot" all words using stemming using diacritics insensitive window 6 sentences]
+ 
+ | //LOCATION[.//text() contains text "Scotland" all words using stemming using diacritics insensitive window 6 sentences]
+
+ | //TSETTINGPLACE[.//text() contains text "Scotland" all words using stemming using diacritics insensitive window 6 sentences]
+
+  | //TTHEMETOPIC[.//text() contains text "Scotland" all words using stemming using diacritics insensitive window 6 sentences]
+
+return
+    $hit/(ancestor::DIV1)          
