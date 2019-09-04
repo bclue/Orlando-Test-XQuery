@@ -1,0 +1,4 @@
+(:- Query 12.01 eXist-db:)
+
+for $hit in //TCHARACTERTYPEROLE[ft:query(.,  "sailor")] | //TCHARACTERTYPEROLE[ft:query(.,  "seaman")] | //TCHARACTERTYPEROLE[ft:query(.,  "officer")]
+      return $hit
