@@ -1,1 +1,84 @@
+(:- Query 1.02 eXist-db :)
 
+(:function to filter out documents by when the author was alive:)
+declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )
+{
+ for $writer  in doc("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/catalogue/catalogue.xml")//person
+
+ 	let $birth := local:process_date($writer/@birth)
+ 	let $death := local:process_date($writer/@death)
+ 	let $id := xs:string($writer/@person_id)
+ 
+  	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
+  	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
+  	order by $birth
+  	return $id
+};
+
+
+declare function local:filter_events($eid as xs:string?, $start_date as xs:string, $end_date as xs:string )
+{
+ 
+ for $date  in doc(concat("/db/TEST/events/", $eid, ".xml"))//FREESTANDING_EVENT//(* except RESPONSIBILITY)//DATE/@VALUE
+ 	let $date := local:process_date($date)
+  	where xs:date($date) ge xs:date($start_date) and xs:date($date) le xs:date($end_date)
+  	order by $date
+  	return true() 
+};
+
+
+
+(:function to reformat Orlando dates to YYYY-MM-DD:)
+declare function local:process_date($string_date as xs:string) {
+ let $date := tokenize($string_date, "[-]")
+ let $exclude := ("", " ", "  ", "    ")
+ let $date := distinct-values($date[not(.=$exclude)])
+
+ return 
+
+ if (count($date) = 3) then (
+	string-join($date, '-')  
+ ) else ( if (count($date) = 2) then (
+ 	concat(string-join($date, '-'), "-01")
+ 	) else (if (count($date) = 1) then ( 
+ 		concat($date, "-01-01")
+ 		) else (
+ 		)
+ 		)
+ 		)
+};
+
+(: Set query variables :)
+let $key_term := "cholera"
+let $start_date := "1832-06-07"
+let $end_date := "1867-08-14"
+
+
+(: Get query results :)
+for $id in local:filter_using_catalogue($start_date, $end_date)
+       	let $bio_uri := concat("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/biography/", $id, "-b.xml")
+		let $writing_uri := concat("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/writing/", $id, "-w.xml")	
+     return
+          if (fn:doc-available($bio_uri) and fn:doc-available($writing_uri)) then (
+             for $hit in doc($bio_uri)//BIOGRAPHY[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words] | doc($writing_uri)//WRITING[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words]
+			return $hit/(ancestor::DIV1)
+
+(:
+for $hit in //BIBLIOGRAPHY_ENTRY[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words]
+	let $date := local:process_date($hit//DATE_OF_PUBLICATION/@REG)
+	where xs:date($date) ge xs:date($start_date) and xs:date($date) le xs:date($end_date)
+  	order by $date
+  	return $hit
+
+:)
+(:
+for $hit in //FREESTANDING_EVENT//CHRONPROSE[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words] | //FREESTANDING_EVENT//SHORTPROSEY[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words]
+	let $eid := xs:string($hit/(ancestor::FREESTANDING_EVENT)/@EID)
+	where local:filter_events($eid, $start_date, $end_date) = true() 
+     return $hit
+:))
