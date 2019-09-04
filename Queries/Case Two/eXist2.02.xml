@@ -1,0 +1,4 @@
+(:- Query 2.02 eXist-db:)
+
+for $hit in doc("/db/TEST/writing/gaskel-w.xml")//NAME[@STANDARD="Dickens, Charles"] | doc("/db/TEST/biography/gaskel-b.xml")//NAME[@STANDARD="Dickens, Charles"]
+return $hit
