@@ -1,1 +1,24 @@
+for $hit in  //FREESTANDING_EVENT[ft:query(., <query>
+     <bool>
+       <term occur="must"> Gaskell</term>
+       <term occur="must"> Dickens</term>
+     </bool>
+   </query>)] | //BIBLIOGRAPHY_ENTRY[ft:query(., <query>
+     <bool>
+       <term occur="must"> Gaskell</term>
+       <term occur="must"> Dickens</term>
+     </bool>
+   </query>)] | //BIOGRAPHY[ft:query(., <query>
+     <bool>
+       <term occur="must"> Gaskell</term>
+       <term occur="must"> Dickens</term>
+     </bool>
+   </query>)] | //WRITING[ft:query(., <query>
+     <bool>
+       <term occur="must"> Gaskell</term>
+       <term occur="must"> Dickens</term>
+     </bool>
+   </query>)]
 
+return
+    $hit
