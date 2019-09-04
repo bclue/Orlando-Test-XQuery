@@ -1,0 +1,17 @@
+declare function local:test() {
+	(: Put the query that you are testing here! :)
+  };
+
+let $start-time := util:system-time()
+
+let $query-start-time := util:system-time()
+
+let $query:= 
+	for $x in (1 to 100)
+		return local:test()
+  
+
+let $query-end-time := util:system-time()
+
+return
+  ($query-end-time - $query-start-time)   div xs:dayTimeDuration('PT1S') div 100
