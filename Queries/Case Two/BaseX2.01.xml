@@ -1,0 +1,4 @@
+(:- Query 2.01 BaseX :)
+
+for $hit in db:open('hope')[.//text() contains text {"Dickens", "Gaskell"} all words using stemming using diacritics insensitive window 6 sentences]
+return $hit
