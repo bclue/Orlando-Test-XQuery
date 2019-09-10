@@ -1,0 +1,9 @@
+(:- Query 9.02a BaseX 
+    Searching writing and lives:)
+
+let $key_term := "Scotland"
+for $hit in db:open('hope')//BIOGRAPHY//DIV2[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+ | db:open('hope')//WRITING//DIV2[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+    return
+     $hit
+

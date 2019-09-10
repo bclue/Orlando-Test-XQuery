@@ -1,4 +1,4 @@
-(:- Query 1.01 BaseX :)
+(:- Query 4.02c BaseX :)
 
 (:function to filter out documents by when the author was alive:)
 declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )

@@ -1,6 +1,14 @@
 
 (:- Query 1.01 BaseX :)
 
+declare namespace functx = "http://www.functx.com";
+
+(: functx function to remove trailing and leading whitespace :)
+declare function functx:trim
+  ( $arg as xs:string? )  as xs:string {
+   replace(replace($arg,'\s+$',''),'^\s+','')
+ } ;
+ 
 (:function to filter out documents by when the author was alive:)
 declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )
 {
@@ -16,14 +24,14 @@ declare function local:filter_using_catalogue( $start_date as xs:string, $end_da
   	return $id
 };
 
-(:function to reformat Orlando dates to YYYY-MM-DD:)
+(: Function to reformat Orlando dates to YYYY-MM-DD
+ Will set month to 01 and day to 01 if unavailable:)
 declare function local:process_date($string_date as xs:string) {
- let $date := tokenize($string_date, "[-]")
- let $exclude := ("", " ", "  ", "    ")
+ let $date := tokenize(functx:trim($string_date), "[-]")
+ let $exclude := ("")
  let $date := distinct-values($date[not(.=$exclude)])
 
  return 
- 
  if (count($date) = 3) then (
 	string-join($date, '-')  
  ) else ( if (count($date) = 2) then (
@@ -50,8 +58,8 @@ for $id in local:filter_using_catalogue($start_date, $end_date)
      return
           if (fn:doc-available($bio_uri) and fn:doc-available($writing_uri)) then (
              for $hit in doc($bio_uri)//DEATH//CAUSE[.//text() contains text { $cause_of_death }
-    using case insensitive distance at most 2 words] | doc($writing_uri)//DEATH//CAUSEE[.//text() contains text { $cause_of_death }
+    using case insensitive distance at most 2 words] | doc($writing_uri)//DEATH//CAUSE[.//text() contains text { $cause_of_death }
     using case insensitive distance at most 2 words]
-			return $hit/(ancestor::DIV1)
+			return $hit/(ancestor::DIV2)
           )
          

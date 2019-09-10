@@ -1,0 +1,15 @@
+(: Query 3.02a BaseX
+Search events :)
+let $key_term := "modernist"
+
+(: Get hosted events from other documents :)
+let $hosted_events := for $hit in //CHRONSTRUCT[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words] 
+     return  $hit
+
+(: Get freestanding events from event documents :)
+ let $freestanding_events := for $hit in //FREESTANDING_EVENT//CHRONSTRUCT[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words]
+     return $hit
+
+return ($hosted_events, $freestanding_events)

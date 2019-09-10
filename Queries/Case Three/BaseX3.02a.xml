@@ -1,0 +1,7 @@
+(: Query 3.02a eXist-db
+Search lives and writing :)
+ 
+let $key_term := "Modernist"
+for $hit in db:open('hope')//WRITING[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+| db:open('hope')//BIOGRAPHY[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+return $hit

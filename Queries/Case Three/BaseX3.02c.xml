@@ -1,0 +1,9 @@
+(:- Query 3.02 BaseX 
+ Part C--search bibliography documents:)
+
+(: Set query variables :)
+let $key_term := "Modernist"
+
+for $hit in //BIBLIOGRAPHY_ENTRY[.//text() contains text { $key_term }
+    using case insensitive distance at most 2 words] 
+  	return $hit

@@ -42,16 +42,19 @@ let $start_date := "1832-06-07"
 let $end_date := "1901-01-22"
 
 (: Get query results :)
-for $id in local:filter_using_catalogue($start_date, $end_date)
+let $region := for $id in local:filter_using_catalogue($start_date, $end_date)
         
-       
+        return
         	let $bio_uri := concat("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/biography/", $id, "-b.xml")
+		(:do layered for loops here :)
+          for $hit in  doc($bio_uri)//REGION[@REG = "Middlesex"] 
+          return $hit/(ancestor::DIV2)
 
-     return
-          if (fn:doc-available($bio_uri)) then (
-             for $hit in  doc($bio_uri)//REGION[@REG = "Middlesex"] intersect doc($bio_uri)//OCCUPATION[.//text() contains text { $occupation }
-    using case insensitive distance at most 2 words]
+let $occupation := for $id in local:filter_using_catalogue($start_date, $end_date)       
+        return
+        	let $bio_uri := concat("TEST/orlando_UTF8ISO8601ExportBuilder_1561501400922003000/biography/", $id, "-b.xml")
+		(:do layered for loops here :)
+          for $hit in  doc($bio_uri)//OCCUPATION[.//text() contains text {$occupation} all words using stemming using diacritics insensitive window 6 sentences]
+			return $hit/(ancestor::DIV2)
 
-    
-			return $hit/(ancestor::DIV1)
-          )
+return $region intersect $occupation

@@ -1,0 +1,8 @@
+(:- Query 9.02c BaseX 
+ Part C--search bibliography documents:)
+
+(: Set query variables :)
+let $key_term := "Scotland"
+
+for $hit in db:open('hope')//BIBLIOGRAPHY_ENTRY[.//text() contains text {$key_term} all words using stemming using diacritics insensitive window 6 sentences]
+  	return $hit
