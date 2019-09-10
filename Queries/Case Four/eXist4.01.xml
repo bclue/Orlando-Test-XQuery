@@ -20,7 +20,7 @@ declare function local:filter_using_catalogue( $start_date as xs:string, $end_da
   	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
   	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
 	or (xs:date($birth) le xs:date($start_date)  and xs:date($death) ge xs:date($end_date)) 
-  	order by $birth
+  	order by $id
   	return $id
 };
 
@@ -55,15 +55,15 @@ let $region := for $id in local:filter_using_catalogue($start_date, $end_date)
         
         return
         	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
-		(:do layered for loops here :)
           for $hit in  doc($bio_uri)//REGION[@REG = "Middlesex"] 
-          return $hit/(ancestor::DIV2)
+          return $hit/(ancestor::BIOGRAPHY)
 
 let $occupation := for $id in local:filter_using_catalogue($start_date, $end_date)       
         return
         	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
-		(:do layered for loops here :)
-          for $hit in  doc($bio_uri)//OCCUPATION[ft:query(.,  $occupation)]
-			return $hit/(ancestor::DIV2)
+          for $hit in  doc($bio_uri)//OCCUPATION[ft:query(.,  $occupation)] 
+          |doc($bio_uri)//OCCUPATION//SIGNIFICANTACTIVITY[@REG = $occupation]
+          |doc($bio_uri)//OCCUPATION//JOB[@REG = $occupation]
+			return $hit/(ancestor::BIOGRAPHY)
 
 return $region intersect $occupation

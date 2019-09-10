@@ -39,6 +39,6 @@ let $end_date := "1941-07-17"
  	
   	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
   	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
-  		
+  	or (xs:date($birth) le xs:date($start_date)  and xs:date($death) ge xs:date($end_date)) 
   	order by $birth
   	return $writer

@@ -2,7 +2,7 @@
  Part C--search bibliography documents:)
 
 (: Set query variables :)
-let $key_term := "Modernist"
+let $key_term := "modernist*"
 
 for $hit in //BIBLIOGRAPHY_ENTRY[ft:query(.,  $key_term)]
   	return $hit

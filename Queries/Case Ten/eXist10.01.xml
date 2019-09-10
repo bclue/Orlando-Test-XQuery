@@ -1,4 +1,4 @@
 (:- Query 10.01 eXist-db:)
 
-for $hit in //ORGNAME[@STANDARD = "National Trust"]
-    return $hit/(ancestor::DIV2)
+for $hit in //ORGNAME[contains(@STANDARD, "National Trust")]
+    return $hit

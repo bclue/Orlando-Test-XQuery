@@ -10,21 +10,28 @@ declare function functx:trim
  } ;
 
 (:function to filter out documents by when the author was alive and what type of writer they were:)
-declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string, $writer_type)
+declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string, $writer_type, $sex)
 {
  for $writer  in doc("/db/TEST/catalogue/catalogue.xml")//person
 
  	let $birth := local:process_date($writer/@birth)
  	let $death := local:process_date($writer/@death)
  	let $person_type := xs:string($writer/@person_type)
+ 	let $sex_type := xs:string($writer/@sex)
  	let $id := xs:string($writer/@person_id)
- 	return
- 	for $type in $writer_type
-  		where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
-  		or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
-  		and $type = $person_type 
-  		order by $birth
+ 	
+ 	
+  	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
+  	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
+  	or (xs:date($birth) le xs:date($start_date)  and xs:date($death) ge xs:date($end_date)) 
+
+  	order by xs:date($birth)
+  	return 
+  		for $type in $writer_type
+  		where $type = $person_type 
+  		and $sex = $sex_type
   		return $id
+
 };
 
 (: Function to reformat Orlando dates to YYYY-MM-DD
@@ -50,11 +57,11 @@ declare function local:process_date($string_date as xs:string) {
 
 let $start_date := "1899-02-01"
 let $end_date := "1941-07-17"
-let $writer_type := ("0", "3")
-
+let $writer_type := ("0", "1", "3")
+let $sex := "0"
 
 (: Get query results :)
-for $id in local:filter_using_catalogue($start_date, $end_date, $writer_type)
+for $id in local:filter_using_catalogue($start_date, $end_date, $writer_type, $sex)
         
         return
 		let $writing_uri := concat("/db/TEST/writing/", $id, "-w.xml")	
