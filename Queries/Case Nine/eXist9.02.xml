@@ -1,6 +1,0 @@
-(:- Query 9.02 eXist-db :)
-let $key_term := "Scotland"
-for $hit in //FREESTANDING_EVENT[ft:query(., $key_term)] | //BIBLIOGRAPHY_ENTRY[ft:query(., $key_term)] | //BIOGRAPHY[ft:query(., $key_term)] | //WRITING[ft:query(., $key_term)]
-order by ft:score($hit) descending
-return
-    $hit

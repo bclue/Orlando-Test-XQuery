@@ -1,4 +1,4 @@
-(:- Query 9.01 eXist-db:)
+(:- Query 10.01 eXist-db:)
 
 for $hit in //ORGNAME[@STANDARD = "National Trust"]
-    return $hit/(ancestor::DIV1)
+    return $hit/(ancestor::DIV2)

@@ -1,0 +1,8 @@
+(:- Query 3.02 eXist-db 
+ Part C--search bibliography documents:)
+
+(: Set query variables :)
+let $key_term := "Modernist"
+
+for $hit in //BIBLIOGRAPHY_ENTRY[ft:query(.,  $key_term)]
+  	return $hit

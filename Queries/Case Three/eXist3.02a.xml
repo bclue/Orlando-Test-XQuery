@@ -1,0 +1,8 @@
+(:- Query 3.02 eXist-db 
+ Part A--searching the writing and biography documents:)
+
+let $key_term := "Modernist"
+for $hit in //BIOGRAPHY//DIV2[ft:query(., $key_term)] | //WRITING//DIV2[ft:query(., $key_term)]
+
+return
+    $hit

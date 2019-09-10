@@ -1,4 +1,5 @@
-(:- Query 4.01 eXist-db :)
+(:- Query 4.02-b eXist-db 
+  BIRTH :)
 
 declare namespace functx = "http://www.functx.com";
 
@@ -43,27 +44,15 @@ declare function local:process_date($string_date as xs:string) {
  		)
  		)
 };
-
 (: Set query variables :)
-let $occupation := "artist"
 let $place := "Middlesex"
 let $start_date := "1832-06-07"
 let $end_date := "1901-01-22"
 
 (: Get query results :)
-let $region := for $id in local:filter_using_catalogue($start_date, $end_date)
+for $id in local:filter_using_catalogue($start_date, $end_date)
         
         return
         	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
-		(:do layered for loops here :)
-          for $hit in  doc($bio_uri)//REGION[@REG = "Middlesex"] 
-          return $hit/(ancestor::DIV2)
-
-let $occupation := for $id in local:filter_using_catalogue($start_date, $end_date)       
-        return
-        	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
-		(:do layered for loops here :)
-          for $hit in  doc($bio_uri)//OCCUPATION[ft:query(.,  $occupation)]
+          for $hit in  doc($bio_uri)//BIRTH//REGION[@REG = "Middlesex"]
 			return $hit/(ancestor::DIV2)
-
-return $region intersect $occupation

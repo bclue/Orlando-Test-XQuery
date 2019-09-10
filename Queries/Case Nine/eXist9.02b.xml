@@ -1,0 +1,15 @@
+(:- Query 9.02b eXist-db 
+ Part B--searching events:)
+
+(: Set query variables :)
+let $key_term := "Scotland"
+
+(: Get hosted events from other documents :)
+let $hosted_events := for $hit in //CHRONSTRUCT[ft:query(.,  $key_term)] 
+     return  $hit
+
+(: Get freestanding events from event documents :)
+ let $freestanding_events := for $hit in //FREESTANDING_EVENT//SHORTPROSE[ft:query(.,  $key_term)] | //FREESTANDING_EVENT//CHRONSTRUCT[ft:query(.,  $key_term)] 
+     return $hit
+
+return ($hosted_events, $freestanding_events)

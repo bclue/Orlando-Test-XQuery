@@ -1,6 +1,16 @@
-(:- Query 4.02-b eXist-db:)
+(:- Query 1.02 eXist-db 
+ Part A--searching the writing and biography documents:)
 
-(:function to filter out documents by when the author was alive:)
+declare namespace functx = "http://www.functx.com";
+
+(: functx function to remove trailing and leading whitespace :)
+declare function functx:trim
+  ( $arg as xs:string? )  as xs:string {
+   replace(replace($arg,'\s+$',''),'^\s+','')
+ } ;
+ 
+
+(: Function to filter out documents by when the author was alive :)
 declare function local:filter_using_catalogue( $start_date as xs:string, $end_date as xs:string )
 {
  for $writer  in doc("/db/TEST/catalogue/catalogue.xml")//person
@@ -11,18 +21,20 @@ declare function local:filter_using_catalogue( $start_date as xs:string, $end_da
  
   	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
   	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
+	or (xs:date($birth) le xs:date($start_date)  and xs:date($death) ge xs:date($end_date)) 
   	order by $birth
   	return $id
 };
 
-(:function to reformat Orlando dates to YYYY-MM-DD:)
+
+(: Function to reformat Orlando dates to YYYY-MM-DD
+ Will set month to 01 and day to 01 if unavailable:)
 declare function local:process_date($string_date as xs:string) {
- let $date := tokenize($string_date, "[-]")
- let $exclude := ("", " ", "  ", "    ")
+ let $date := tokenize(functx:trim($string_date), "[-]")
+ let $exclude := ("")
  let $date := distinct-values($date[not(.=$exclude)])
 
  return 
- 
  if (count($date) = 3) then (
 	string-join($date, '-')  
  ) else ( if (count($date) = 2) then (
@@ -36,15 +48,15 @@ declare function local:process_date($string_date as xs:string) {
 };
 
 (: Set query variables :)
-let $place := "Middlesex"
+let $key_term := "cholera"
 let $start_date := "1832-06-07"
-let $end_date := "1901-01-22"
+let $end_date := "1867-08-14"
+
 
 (: Get query results :)
 for $id in local:filter_using_catalogue($start_date, $end_date)
-        
         return
         	let $bio_uri := concat("/db/TEST/biography/", $id, "-b.xml")
-		(:do layered for loops here :)
-          for $hit in  doc($bio_uri)//BIRTH//REGION[@REG = "Middlesex"]
-			return $hit/(ancestor::DIV1)
+		let $writing_uri := concat("/db/TEST/writing/", $id, "-w.xml")	
+          for $hit in doc($bio_uri)//DIV2[ft:query(.,  $key_term)] | doc($writing_uri)//DIV2[ft:query(.,  $key_term)]
+			return $hit

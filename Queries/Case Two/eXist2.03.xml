@@ -1,4 +1,5 @@
 (:- Query 2.03 eXist-db:)
 
-for $hit in doc("/db/TEST/writing/dickch-w.xml")//NAME[@STANDARD="Gaskell, Elizabeth"] | doc("/db/TEST/biography/dickch-b.xml")//NAME[@STANDARD="Gaskell, Elizabeth"]
-return $hit
+for $hit in doc("/db/TEST/writing/dickch-w.xml")//NAME[@STANDARD="Gaskell, Elizabeth"] 
+| doc("/db/TEST/biography/dickch-b.xml")//NAME[@STANDARD="Gaskell, Elizabeth"]
+	return $hit/(ancestor::DIV2)

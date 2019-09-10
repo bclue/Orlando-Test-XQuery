@@ -1,5 +1,8 @@
 (:- Query 9.01 eXist-db:)
 
-for $hit in //CULTURALFORMATION[ft:query(., "Scot")]  | //LOCATION[ft:query(., "Scotland")] | //TSETTINGPLACE[ft:query(., "Scotland")] | //TTHEMETOPIC[ft:query(., "Scotland")]
+for $hit in //CULTURALFORMATION[ft:query(., "Scot")]  
+| //LOCATION[ft:query(., "Scotland")] 
+| //TSETTINGPLACE[ft:query(., "Scotland")] 
+| //TTHEMETOPIC[ft:query(., "Scotland")]
 return
     $hit/(ancestor::DIV1)

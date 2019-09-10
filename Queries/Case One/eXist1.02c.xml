@@ -1,4 +1,5 @@
-(:- Query 3.01 eXist-db :)
+(:- Query 1.02 eXist-db 
+ Part C--searching the bibliography documents:)
 
 declare namespace functx = "http://www.functx.com";
 
@@ -7,7 +8,7 @@ declare function functx:trim
   ( $arg as xs:string? )  as xs:string {
    replace(replace($arg,'\s+$',''),'^\s+','')
  } ;
- 
+
 (: Function to reformat Orlando dates to YYYY-MM-DD
  Will set month to 01 and day to 01 if unavailable:)
 declare function local:process_date($string_date as xs:string) {
@@ -28,17 +29,17 @@ declare function local:process_date($string_date as xs:string) {
  		)
 };
 
-let $start_date := "1899-02-01"
-let $end_date := "1941-07-17"
+(: Set query variables :)
+let $key_term := "cholera"
+let $start_date := "1832-06-07"
+let $end_date := "1867-08-14"
 
- for $writer  in doc("/db/TEST/catalogue/catalogue.xml")//person
+(: Get query results :)
 
- 	let $birth := local:process_date($writer/@birth)
- 	let $death := local:process_date($writer/@death)
- 	
- 	
-  	where (xs:date($birth) ge xs:date($start_date)  and xs:date($birth) le xs:date($end_date))
-  	or (xs:date($death) ge xs:date($start_date)  and xs:date($death) le xs:date($end_date))
-  		
-  	order by $birth
-  	return $writer
+for $hit in //BIBLIOGRAPHY_ENTRY[ft:query(.,  $key_term)]
+	let $date := local:process_date($hit//DATE_OF_PUBLICATION/@REG)
+	where xs:date($date) ge xs:date($start_date) and xs:date($date) le xs:date($end_date)
+  	order by $date
+  	return $hit
+
+

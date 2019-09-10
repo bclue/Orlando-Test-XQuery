@@ -1,3 +1,19 @@
+(:- Query 2.01 eXist-db :) 
+
+for $hit in  //DIV2[ft:query(., <query>
+     <bool>
+       <term occur="must"> Gaskell</term>
+       <term occur="must"> Dickens</term>
+     </bool>
+   </query>)] 
+
+	return
+    		$hit
+
+(: NOTE: If you want a query that will return a hit 
+if the two names appear anywhere in the same document
+use the following: 
+
 for $hit in  //FREESTANDING_EVENT[ft:query(., <query>
      <bool>
        <term occur="must"> Gaskell</term>
@@ -22,3 +38,4 @@ for $hit in  //FREESTANDING_EVENT[ft:query(., <query>
 
 return
     $hit
+:)
